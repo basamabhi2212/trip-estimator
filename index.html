@@ -594,13 +594,6 @@
             });
             
             copyBtn.addEventListener('click', copySummary);
-            
-            // Set default date/time (current time and +2 hours)
-            const now = new Date();
-            const later = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // +2 hours
-            
-            document.getElementById('startDateTime').value = now.toISOString().slice(0, 16);
-            document.getElementById('endDateTime').value = later.toISOString().slice(0, 16);
         });
     </script>
 </body>
