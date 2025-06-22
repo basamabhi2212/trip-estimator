@@ -1,273 +1,607 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Trip Estimation Calculator</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-    .container {
-      background: #ffffff;
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 700px;
-      width: 100%;
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 25px;
-    }
-    label {
-      margin-top: 15px;
-      font-weight: 600;
-      display: block;
-      color: #555;
-    }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 15px;
-    }
-    button {
-      margin-top: 25px;
-      padding: 12px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .result {
-      margin-top: 30px;
-      background: #f9fafb;
-      border-left: 6px solid #007bff;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .copy-box {
-      margin-top: 25px;
-      background: #edf2f7;
-      padding: 15px 20px;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 14px;
-      border: 1px dashed #ccc;
-      border-radius: 8px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .copy-btn {
-      margin-top: 10px;
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      cursor: pointer;
-      font-size: 14px;
-      border-radius: 6px;
-      display: block;
-      width: 100%;
-    }
-    .copy-btn:hover {
-      background-color: #218838;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Fare Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF8C00 0%, #FF7F00 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #FF8C00;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FF8C00 0%, #FF7F00 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 140, 0, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1.1rem;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #FF8C00;
+        }
+
+        .result-label {
+            color: #666;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #FF8C00;
+        }
+
+        .summary.show {
+            display: block;
+            animation: slideIn 0.5s ease 0.3s both;
+        }
+
+        .summary h3 {
+            color: #FF8C00;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .summary-item {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Trip Estimation Calculator</h2>
+    <div class="container">
+        <div class="header">
+            <h1>Trip Fare Calculator</h1>
+            <p>Calculate your trip fare with precision</p>
+        </div>
 
-    <label for="startTime">Trip Start Date & Time:</label>
-    <input type="datetime-local" id="startTime" />
+        <div class="form-container">
+            <form id="fareForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDateTime">Trip Start Date & Time</label>
+                        <input type="datetime-local" id="startDateTime" required>
+                        <div class="error" id="startError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDateTime">Trip End Date & Time</label>
+                        <input type="datetime-local" id="endDateTime" required>
+                        <div class="error" id="endError"></div>
+                    </div>
+                </div>
 
-    <label for="endTime">Trip End Date & Time:</label>
-    <input type="datetime-local" id="endTime" />
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="uniform">Uniform</label>
+                        <select id="uniform" required>
+                            <option value="">Select Option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tripType">Trip Type</label>
+                        <select id="tripType" required>
+                            <option value="">Select Type</option>
+                            <option value="instation">In-station</option>
+                            <option value="outstation">Out-station</option>
+                        </select>
+                    </div>
+                </div>
 
-    <label for="uniform">Uniform:</label>
-    <select id="uniform">
-      <option value="No">No</option>
-      <option value="Yes">Yes</option>
-    </select>
+                <div class="form-group">
+                    <label for="tripRoute">Trip Route</label>
+                    <select id="tripRoute" required>
+                        <option value="">Select Route</option>
+                        <option value="oneway">One Way</option>
+                        <option value="roundtrip">Round Trip</option>
+                    </select>
+                </div>
 
-    <label for="tripType">Trip Type:</label>
-    <select id="tripType">
-      <option value="Instation">Instation</option>
-      <option value="Outstation">Outstation</option>
-    </select>
+                <button type="submit" class="calculate-btn">Calculate Fare</button>
+            </form>
 
-    <label for="mode">Trip Route:</label>
-    <select id="mode">
-      <option value="One Way">One Way</option>
-      <option value="Round Trip">Round Trip</option>
-    </select>
+            <div class="results" id="results">
+                <h2>Fare Calculation Results</h2>
+                <div id="resultsContent"></div>
+            </div>
 
-    <button onclick="calculateFare()">Calculate Fare</button>
+            <div class="summary" id="summary">
+                <h3>Trip Summary</h3>
+                <div id="summaryContent"></div>
+                <button class="copy-btn" id="copyBtn">Copy Summary</button>
+            </div>
+        </div>
+    </div>
 
-    <div class="result" id="result"></div>
-  </div>
+    <script>
+        // Encrypted pricing data (Base64 encoded JSON)
+        const encryptedPricing = "eyJ1bmlmb3JtX25vX2luc3RhdGlvbl9yb3VuZHRyaXAiOlt7Im1pbiI6NjAsIm1heCI6MTE5LCJkYXkiOjIuMjUsIm5pZ2h0IjoyLjZ9LHsibWluIjoxMjAsIm1heCI6MjM5LCJkYXkiOjIuMTUsIm5pZ2h0IjoyLjU1fSx7Im1pbiI6MjQwLCJtYXgiOjM1OSwiZGF5IjoyLjEsIm5pZ2h0IjoyLjR9LHsibWluIjozNjAsIm1heCI6NDc5LCJkYXkiOjIuMSwibmlnaHQiOjIuNH0seyJtaW4iOjQ4MCwibWF4Ijo1OTksImRheSI6MS45LCJuaWdodCI6Mi4zNX0seyJtaW4iOjYwMCwibWF4Ijo3MTksImRheSI6MS44NSwibmlnaHQiOjIuM30seyJtaW4iOjcyMCwibWF4IjoxMDc5LCJkYXkiOjEuNywibmlnaHQiOjEuOTV9LHsibWluIjoxMDgwLCJtYXgiOjE0MzksImRheSI6MS41LCJuaWdodCI6MS41NX0seyJtaW4iOjE0NDAsIm1heCI6Mjg3OSwiZGF5IjoxLjE1LCJuaWdodCI6MS4xNX0seyJtaW4iOjI4ODAsIm1heCI6NDMxOSwiZGF5IjoxLjE1LCJuaWdodCI6MS4xNX0seyJtaW4iOjQzMjAsIm1heCI6NTc1OSwiZGF5IjoxLjE1LCJuaWdodCI6MS4xNX0seyJtaW4iOjU3NjAsIm1heCI6NzE5OSwiZGF5IjoxLjE1LCJuaWdodCI6MS4xNX0seyJtaW4iOjcyMDAsIm1heCI6ODYzOSwiZGF5IjoxLjE1LCJuaWdodCI6MS4xNX0seyJtaW4iOjg2NDAsIm1heCI6MTAwNzksImRheSI6MS4wNSwibmlnaHQiOjEuMDV9LHsibWluIjoxMDA4MCwibWF4IjoxNDM5OSwiZGF5IjoxLjA1LCJuaWdodCI6MS4wNX0seyJtaW4iOjE0NDAwLCJtYXgiOjIxNTk5LCJkYXkiOjEuMDUsIm5pZ2h0IjoxLjA1fSx7Im1pbiI6MjE2MDAsIm1heCI6Mjg3OTksImRheSI6MS4wNSwibmlnaHQiOjEuMDV9LHsibWluIjoyODgwMCwibWF4IjozNTk5OSwiZGF5IjoxLjA1LCJuaWdodCI6MS4wNX0seyJtaW4iOjM2MDAwLCJtYXgiOjQzMTk5LCJkYXkiOjEuMDUsIm5pZ2h0IjoxLjA1fSx7Im1pbiI6NDMyMDAsIm1heCI6MTAwMDAwMCwiZGF5IjoxLjA1LCJuaWdodCI6MS4wNX1dLCJ1bmlmb3JtX25vX2luc3RhdGlvbl9vbmV3YXkiOlt7Im1pbiI6NjAsIm1heCI6MTE5LCJkYXkiOjIuNywibmlnaHQiOjUuNTV9LHsibWluIjoxMjAsIm1heCI6MjM5LCJkYXkiOjIuNiwibmlnaHQiOjUuMX0seyJtaW4iOjI0MCwibWF4IjozNTksImRheSI6Mi40LCJuaWdodCI6NC42fSx7Im1pbiI6MzYwLCJtYXgiOjQ3OSwiZGF5IjoyLjQsIm5pZ2h0Ijo0LjZ9LHsibWluIjo0ODAsIm1heCI6NTk5LCJkYXkiOjIuMTUsIm5pZ2h0IjozLjE1fSx7Im1pbiI6NjAwLCJtYXgiOjcxOSwiZGF5IjoyLjE1LCJuaWdodCI6My4xNX0seyJtaW4iOjcyMCwibWF4IjoxMDc5LCJkYXkiOjIuMSwibmlnaHQiOjIuNn0seyJtaW4iOjEwODAsIm1heCI6MTQzOSwiZGF5IjoxLjgsIm5pZ2h0IjoxLjl9LHsibWluIjoxNDQwLCJtYXgiOjI4NzksImRheSI6MS41LCJuaWdodCI6MS41fSx7Im1pbiI6Mjg4MCwibWF4Ijo0MzE5LCJkYXkiOjEuNSwibmlnaHQiOjEuNX0seyJtaW4iOjQzMjAsIm1heCI6NTc1OSwiZGF5IjoxLjUsIm5pZ2h0IjoxLjV9LHsibWluIjo1NzYwLCJtYXgiOjcxOTksImRheSI6MS41LCJuaWdodCI6MS41fSx7Im1pbiI6NzIwMCwibWF4Ijo4NjM5LCJkYXkiOjEuNSwibmlnaHQiOjEuNX0seyJtaW4iOjg2NDAsIm1heCI6MTAwNzksImRheSI6MS4zLCJuaWdodCI6MS4zfSx7Im1pbiI6MTAwODAsIm1heCI6MTQzOTksImRheSI6MS4zLCJuaWdodCI6MS4zfSx7Im1pbiI6MTQ0MDAsIm1heCI6MjE1OTksImRheSI6MS4zLCJuaWdodCI6MS4zfSx7Im1pbiI6MjE2MDAsIm1heCI6Mjg3OTksImRheSI6MS4zLCJuaWdodCI6MS4zfSx7Im1pbiI6Mjg4MDAsIm1heCI6MzU5OTksImRheSI6MS4zLCJuaWdodCI6MS4zfSx7Im1pbiI6MzYwMDAsIm1heCI6NDMxOTksImRheSI6MS4zLCJuaWdodCI6MS4zfSx7Im1pbiI6NDMyMDAsIm1heCI6MTAwMDAwMCwiZGF5IjoxLjMsIm5pZ2h0IjoxLjN9XSwidW5pZm9ybV9ub19vdXRzdGF0aW9uX3JvdW5kdHJpcCI6W3sibWluIjo2MCwibWF4IjoxMTksImRheSI6Mi42LCJuaWdodCI6My4wNX0seyJtaW4iOjEyMCwibWF4IjoyMzksImRheSI6Mi41NSwibmlnaHQiOjN9LHsibWluIjoyNDAsIm1heCI6MzU5LCJkYXkiOjIuMjUsIm5pZ2h0IjoyLjQ1fSx7Im1pbiI6MzYwLCJtYXgiOjQ3OSwiZGF5IjoyLjI1LCJuaWdodCI6Mi40NX0seyJtaW4iOjQ4MCwibWF4Ijo1OTksImRheSI6Mi4xNSwibmlnaHQiOjIuNH0seyJtaW4iOjYwMCwibWF4Ijo3MTksImRheSI6Mi4xNSwibmlnaHQiOjIuNH0seyJtaW4iOjcyMCwibWF4IjoxMDc5LCJkYXkiOjIsIm5pZ2h0IjoyLjI1fSx7Im1pbiI6MTA4MCwibWF4IjoxNDM5LCJkYXkiOjEuNywibmlnaHQiOjEuN30seyJtaW4iOjE0NDAsIm1heCI6Mjg3OSwiZGF5IjoxLjIsIm5pZ2h0IjoxLjJ9LHsibWluIjoyODgwLCJtYXgiOjQzMTksImRheSI6MS4yLCJuaWdodCI6MS4yfSx7Im1pbiI6NDMyMCwibWF4Ijo1NzU5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjU3NjAsIm1heCI6NzE5OSwiZGF5IjoxLjIsIm5pZ2h0IjoxLjJ9LHsibWluIjo3MjAwLCJtYXgiOjg2MzksImRheSI6MS4yLCJuaWdodCI6MS4yfSx7Im1pbiI6ODY0MCwibWF4IjoxMDA3OSwiZGF5IjoxLjE1LCJuaWdodCI6MS4xNX0seyJtaW4iOjEwMDgwLCJtYXgiOjE0Mzk5LCJkYXkiOjEuMTUsIm5pZ2h0IjoxLjE1fSx7Im1pbiI6MTQ0MDAsIm1heCI6MjE1OTksImRheSI6MS4xNSwibmlnaHQiOjEuMTV9LHsibWluIjoyMTYwMCwibWF4IjoyODc5OSwiZGF5IjoxLjE1LCJuaWdodCI6MS4xNX0seyJtaW4iOjI4ODAwLCJtYXgiOjM1OTk5LCJkYXkiOjEuMTUsIm5pZ2h0IjoxLjE1fSx7Im1pbiI6MzYwMDAsIm1heCI6NDMxOTksImRheSI6MS4xNSwibmlnaHQiOjEuMTV9LHsibWluIjo0MzIwMCwibWF4IjoxMDAwMDAwLCJkYXkiOjEuMTUsIm5pZ2h0IjoxLjE1fV0sInVuaWZvcm1fbm9fb3V0c3RhdGlvbl9vbmV3YXkiOlt7Im1pbiI6NjAsIm1heCI6MTE5LCJkYXkiOjYuMywibmlnaHQiOjYuM30seyJtaW4iOjEyMCwibWF4IjoyMzksImRheSI6NS45LCJuaWdodCI6NS45fSx7Im1pbiI6MjQwLCJtYXgiOjM1OSwiZGF5Ijo1LjksIm5pZ2h0Ijo1Ljl9LHsibWluIjozNjAsIm1heCI6NDc5LCJkYXkiOjUuOSwibmlnaHQiOjUuOX0seyJtaW4iOjQ4MCwibWF4Ijo1OTksImRheSI6NS45LCJuaWdodCI6NS45fSx7Im1pbiI6NjAwLCJtYXgiOjcxOSwiZGF5Ijo1LjksIm5pZ2h0Ijo1Ljl9LHsibWluIjo3MjAsIm1heCI6MTA3OSwiZGF5Ijo1LjIsIm5pZ2h0Ijo1LjJ9LHsibWluIjoxMDgwLCJtYXgiOjE0MzksImRheSI6My44LCJuaWdodCI6My44fSx7Im1pbiI6MTQ0MCwibWF4IjoyODc5LCJkYXkiOjMsIm5pZ2h0IjozfSx7Im1pbiI6Mjg4MCwibWF4Ijo0MzE5LCJkYXkiOjMsIm5pZ2h0IjozfSx7Im1pbiI6NDMyMCwibWF4Ijo1NzU5LCJkYXkiOjMsIm5pZ2h0IjozfSx7Im1pbiI6NTc2MCwibWF4Ijo3MTk5LCJkYXkiOjMsIm5pZ2h0IjozfSx7Im1pbiI6NzIwMCwibWF4Ijo4NjM5LCJkYXkiOjMsIm5pZ2h0IjozfSx7Im1pbiI6ODY0MCwibWF4IjoxMDA3OSwiZGF5IjoyLjE1LCJuaWdodCI6Mi4xNX0seyJtaW4iOjEwMDgwLCJtYXgiOjE0Mzk5LCJkYXkiOjIuMTUsIm5pZ2h0IjoyLjE1fSx7Im1pbiI6MTQ0MDAsIm1heCI6MjE1OTksImRheSI6Mi4xNSwibmlnaHQiOjIuMTV9LHsibWluIjoyMTYwMCwibWF4IjoyODc5OSwiZGF5IjoyLjE1LCJuaWdodCI6Mi4xNX0seyJtaW4iOjI4ODAwLCJtYXgiOjM1OTk5LCJkYXkiOjIuMTUsIm5pZ2h0IjoyLjE1fSx7Im1pbiI6MzYwMDAsIm1heCI6NDMxOTksImRheSI6Mi4xNSwibmlnaHQiOjIuMTV9LHsibWluIjo0MzIwMCwibWF4IjoxMDAwMDAwLCJkYXkiOjIuMTUsIm5pZ2h0IjoyLjE1fV0sInVuaWZvcm1feWVzX2luc3RhdGlvbl9yb3VuZHRyaXAiOlt7Im1pbiI6NjAsIm1heCI6MTE5LCJkYXkiOjIuMywibmlnaHQiOjIuNjV9LHsibWluIjoxMjAsIm1heCI6MjM5LCJkYXkiOjIuMiwibmlnaHQiOjIuNn0seyJtaW4iOjI0MCwibWF4IjozNTksImRheSI6Mi4xNSwibmlnaHQiOjIuNDV9LHsibWluIjozNjAsIm1heCI6NDc5LCJkYXkiOjIuMTUsIm5pZ2h0IjoyLjQ1fSx7Im1pbiI6NDgwLCJtYXgiOjU5OSwiZGF5IjoxLjk1LCJuaWdodCI6Mi40fSx7Im1pbiI6NjAwLCJtYXgiOjcxOSwiZGF5IjoxLjksIm5pZ2h0IjoyLjM1fSx7Im1pbiI6NzIwLCJtYXgiOjEwNzksImRheSI6MS43NSwibmlnaHQiOjJ9LHsibWluIjoxMDgwLCJtYXgiOjE0MzksImRheSI6MS41NSwibmlnaHQiOjEuNn0seyJtaW4iOjE0NDAsIm1heCI6Mjg3OSwiZGF5IjoxLjIsIm5pZ2h0IjoxLjJ9LHsibWluIjoyODgwLCJtYXgiOjQzMTksImRheSI6MS4yLCJuaWdodCI6MS4yfSx7Im1pbiI6NDMyMCwibWF4Ijo1NzU5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjU3NjAsIm1heCI6NzE5OSwiZGF5IjoxLjIsIm5pZ2h0IjoxLjJ9LHsibWluIjo3MjAwLCJtYXgiOjg2MzksImRheSI6MS4yLCJuaWdodCI6MS4yfSx7Im1pbiI6ODY0MCwibWF4IjoxMDA3OSwiZGF5IjoxLjEsIm5pZ2h0IjoxLjF9LHsibWluIjoxMDA4MCwibWF4IjoxNDM5OSwiZGF5IjoxLjEsIm5pZ2h0IjoxLjF9LHsibWluIjoxNDQwMCwibWF4IjoyMTU5OSwiZGF5IjoxLjEsIm5pZ2h0IjoxLjF9LHsibWluIjoyMTYwMCwibWF4IjoyODc5OSwiZGF5IjoxLjEsIm5pZ2h0IjoxLjF9LHsibWluIjoyODgwMCwibWF4IjozNTk5OSwiZGF5IjoxLjEsIm5pZ2h0IjoxLjF9LHsibWluIjozNjAwMCwibWF4Ijo0MzE5OSwiZGF5IjoxLjEsIm5pZ2h0IjoxLjF9LHsibWluIjo0MzIwMCwibWF4IjoxMDAwMDAwLCJkYXkiOjEuMSwibmlnaHQiOjEuMX1dLCJ1bmlmb3JtX3llc19pbnN0YXRpb25fb25ld2F5IjpbeyJtaW4iOjYwLCJtYXgiOjExOSwiZGF5IjoyLjc1LCJuaWdodCI6NS42fSx7Im1pbiI6MTIwLCJtYXgiOjIzOSwiZGF5IjoyLjY1LCJuaWdodCI6NS4xNX0seyJtaW4iOjI0MCwibWF4IjozNTksImRheSI6Mi40NSwibmlnaHQiOjQuNjV9LHsibWluIjozNjAsIm1heCI6NDc5LCJkYXkiOjIuNDUsIm5pZ2h0Ijo0LjY1fSx7Im1pbiI6NDgwLCJtYXgiOjU5OSwiZGF5IjoyLjIsIm5pZ2h0IjozLjJ9LHsibWluIjo2MDAsIm1heCI6NzE5LCJkYXkiOjIuMiwibmlnaHQiOjMuMn0seyJtaW4iOjcyMCwibWF4IjoxMDc5LCJkYXkiOjIuMTUsIm5pZ2h0IjoyLjY1fSx7Im1pbiI6MTA4MCwibWF4IjoxNDM5LCJkYXkiOjEuODUsIm5pZ2h0IjoxLjk1fSx7Im1pbiI6MTQ0MCwibWF4IjoyODc5LCJkYXkiOjEuNTUsIm5pZ2h0IjoxLjU1fSx7Im1pbiI6Mjg4MCwibWF4Ijo0MzE5LCJkYXkiOjEuNTUsIm5pZ2h0IjoxLjU1fSx7Im1pbiI6NDMyMCwibWF4Ijo1NzU5LCJkYXkiOjEuNTUsIm5pZ2h0IjoxLjU1fSx7Im1pbiI6NTc2MCwibWF4Ijo3MTk5LCJkYXkiOjEuNTUsIm5pZ2h0IjoxLjU1fSx7Im1pbiI6NzIwMCwibWF4Ijo4NjM5LCJkYXkiOjEuNTUsIm5pZ2h0IjoxLjU1fSx7Im1pbiI6ODY0MCwibWF4IjoxMDA3OSwiZGF5IjoxLjM1LCJuaWdodCI6MS4zNX0seyJtaW4iOjEwMDgwLCJtYXgiOjE0Mzk5LCJkYXkiOjEuMzUsIm5pZ2h0IjoxLjM1fSx7Im1pbiI6MTQ0MDAsIm1heCI6MjE1OTksImRheSI6MS4zNSwibmlnaHQiOjEuMzV9LHsibWluIjoyMTYwMCwibWF4IjoyODc5OSwiZGF5IjoxLjM1LCJuaWdodCI6MS4zNX0seyJtaW4iOjI4ODAwLCJtYXgiOjM1OTk5LCJkYXkiOjEuMzUsIm5pZ2h0IjoxLjM1fSx7Im1pbiI6MzYwMDAsIm1heCI6NDMxOTksImRheSI6MS4zNSwibmlnaHQiOjEuMzV9LHsibWluIjo0MzIwMCwibWF4IjoxMDAwMDAwLCJkYXkiOjEuMzUsIm5pZ2h0IjoxLjM1fV0sInVuaWZvcm1feWVzX291dHN0YXRpb25fcm91bmR0cmlwIjpbeyJtaW4iOjYwLCJtYXgiOjExOSwiZGF5IjoyLjY1LCJuaWdodCI6My4xfSx7Im1pbiI6MTIwLCJtYXgiOjIzOSwiZGF5IjoyLjYsIm5pZ2h0IjozLjA1fSx7Im1pbiI6MjQwLCJtYXgiOjM1OSwiZGF5IjoyLjMsIm5pZ2h0IjoyLjV9LHsibWluIjozNjAsIm1heCI6NDc5LCJkYXkiOjIuMywibmlnaHQiOjIuNX0seyJtaW4iOjQ4MCwibWF4Ijo1OTksImRheSI6Mi4yLCJuaWdodCI6Mi40NX0seyJtaW4iOjYwMCwibWF4Ijo3MTksImRheSI6Mi4yLCJuaWdodCI6Mi40NX0seyJtaW4iOjcyMCwibWF4IjoxMDc5LCJkYXkiOjIuMDUsIm5pZ2h0IjoyLjN9LHsibWluIjoxMDgwLCJtYXgiOjE0MzksImRheSI6MS43NSwibmlnaHQiOjEuNzV9LHsibWluIjoxNDQwLCJtYXgiOjI4NzksImRheSI6MS4yNSwibmlnaHQiOjEuMjV9LHsibWluIjoyODgwLCJtYXgiOjQzMTksImRheSI6MS4yNSwibmlnaHQiOjEuMjV9LHsibWluIjo0MzIwLCJtYXgiOjU3NTksImRheSI6MS4yNSwibmlnaHQiOjEuMjV9LHsibWluIjo1NzYwLCJtYXgiOjcxOTksImRheSI6MS4yNSwibmlnaHQiOjEuMjV9LHsibWluIjo3MjAwLCJtYXgiOjg2MzksImRheSI6MS4yNSwibmlnaHQiOjEuMjV9LHsibWluIjo4NjQwLCJtYXgiOjEwMDc5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjEwMDgwLCJtYXgiOjE0Mzk5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjE0NDAwLCJtYXgiOjIxNTk5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjIxNjAwLCJtYXgiOjI4Nzk5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjI4ODAwLCJtYXgiOjM1OTk5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjM2MDAwLCJtYXgiOjQzMTk5LCJkYXkiOjEuMiwibmlnaHQiOjEuMn0seyJtaW4iOjQzMjAwLCJtYXgiOjEwMDAwMDAsImRheSI6MS4yLCJuaWdodCI6MS4yfV0sInVuaWZvcm1feWVzX291dHN0YXRpb25fb25ld2F5IjpbeyJtaW4iOjYwLCJtYXgiOjExOSwiZGF5Ijo2LjM1LCJuaWdodCI6Ni4zNX0seyJtaW4iOjEyMCwibWF4IjoyMzksImRheSI6NS45NSwibmlnaHQiOjUuOTV9LHsibWluIjoyNDAsIm1heCI6MzU5LCJkYXkiOjUuOTUsIm5pZ2h0Ijo1Ljk1fSx7Im1pbiI6MzYwLCJtYXgiOjQ3OSwiZGF5Ijo1Ljk1LCJuaWdodCI6NS45NX0seyJtaW4iOjQ4MCwibWF4Ijo1OTksImRheSI6NS45NSwibmlnaHQiOjUuOTV9LHsibWluIjo2MDAsIm1heCI6NzE5LCJkYXkiOjUuOTUsIm5pZ2h0Ijo1Ljk1fSx7Im1pbiI6NzIwLCJtYXgiOjEwNzksImRheSI6NS4yNSwibmlnaHQiOjUuMjV9LHsibWluIjoxMDgwLCJtYXgiOjE0MzksImRheSI6My44NSwibmlnaHQiOjMuODV9LHsibWluIjoxNDQwLCJtYXgiOjI4NzksImRheSI6My4wNSwibmlnaHQiOjMuMDV9LHsibWluIjoyODgwLCJtYXgiOjQzMTksImRheSI6My4wNSwibmlnaHQiOjMuMDV9LHsibWluIjo0MzIwLCJtYXgiOjU3NTksImRheSI6My4wNSwibmlnaHQiOjMuMDV9LHsibWluIjo1NzYwLCJtYXgiOjcxOTksImRheSI6My4wNSwibmlnaHQiOjMuMDV9LHsibWluIjo3MjAwLCJtYXgiOjg2MzksImRheSI6My4wNSwibmlnaHQiOjMuMDV9LHsibWluIjo4NjQwLCJtYXgiOjEwMDc5LCJkYXkiOjIuMiwibmlnaHQiOjIuMn0seyJtaW4iOjEwMDgwLCJtYXgiOjE0Mzk5LCJkYXkiOjIuMiwibmlnaHQiOjIuMn0seyJtaW4iOjE0NDAwLCJtYXgiOjIxNTk5LCJkYXkiOjIuMiwibmlnaHQiOjIuMn0seyJtaW4iOjIxNjAwLCJtYXgiOjI4Nzk5LCJkYXkiOjIuMiwibmlnaHQiOjIuMn0seyJtaW4iOjI4ODAwLCJtYXgiOjM1OTk5LCJkYXkiOjIuMiwibmlnaHQiOjIuMn0seyJtaW4iOjM2MDAwLCJtYXgiOjQzMTk5LCJkYXkiOjIuMiwibmlnaHQiOjIuMn0seyJtaW4iOjQzMjAwLCJtYXgiOjEwMDAwMDAsImRheSI6Mi4yLCJuaWdodCI6Mi4yfV19";
 
-  <script>
-    const encodedFareChart = 'eyJObyI6eyJJbnN0YXRpb24iOnsicm91bmQgVHJpcCI6WzIuMiwyLjU1LDIuMSwyLjUsMi4wNSwyLjM1LDEuODUsMi4zLDEuNjUsMS45LDEuNDUsMS41LDEuMSwxLjBdLCJPbmUgV2F5IjpbMi42LDUuNDUsMi41NSw1LDIuMzUsNC41LDIuMSwzLjA1LDIuMDUsMi41NSwxLjc1LDEuODUsMS40NSwxLjI1XX0sIk91dHN0YXRpb24iOnsicm91bmQgVHJpcCI6WzIuNTUsMywyLjUsMi45NSwyLjIsMi40LDIuMSwyLjM1LDEuOTUsMi4yLDEuNiwyLjEsMS4xNSwxLjFdLCJPbmUgV2F5IjpbNi4xLDYuMSw1LjgsNS44LDUuOCw1LjgsNS44LDUuOCw1LjEsNS4xLDMuNywzLjcsMi45NSwyLjEwXX19LCJZZXMiOnsiSW5zdGF0aW9uIjp7InJvdW5kIFRyaXAiOlsyLjI1LDIuNiwyLjE1LDIuNTUsMi4xLDIuNCwxLjksMi4zNSwxLjcsMS45NSwxLjUsMS41NSwxLjE1LDEuMTBdLCJPbmUgV2F5IjpbMi42NSw1LjUsMi42LDUuMDUsMi40LDQuNTUsMi4xNSwzLjEsMi4xLDIuNiwyLjQsMS45LDEuNSwxLjMwXX0sIk91dHN0YXRpb24iOnsicm91bmQgVHJpcCI6WzIuNiwyLjA1LDIuNTUsMywyLjI1LDIuNDUsMi4xNSwyLjQsMiwyLjI1LDEuNjUsMS42NSwxLjIsMS4xNV0sIk9uZSBXYXkiOls2LjE1LDYuMTUsNS44NSw1Ljg1LDUuODUsNS44NSw1Ljg1LDUuODUsNS4xNSw1LjE1LDMuNzUsMy43NSwzLDMuMTVdfX19';
-    const fareChart = JSON.parse(atob(encodedFareChart));
-
-    function pad(n) {
-      return n.toString().padStart(2, '0');
-    }
-
-    function formatDateTime(date) {
-      return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-    }
-
-    function calculateFare() {
-      const start = new Date(document.getElementById("startTime").value);
-      const end = new Date(document.getElementById("endTime").value);
-      const uniform = document.getElementById("uniform").value;
-      const tripType = document.getElementById("tripType").value;
-      const mode = document.getElementById("mode").value;
-
-      if (isNaN(start) || isNaN(end) || end <= start) {
-        alert("Please enter valid start and end times.");
-        return;
-      }
-
-      const priceArray = fareChart[uniform][tripType][mode.toLowerCase().includes("round") ? "round Trip" : "One Way"];
-      let totalMinutes = 0, dayMinutes = 0, nightMinutes = 0;
-
-      let current = new Date(start);
-      while (current < end) {
-        const hour = current.getHours();
-        const isDay = hour >= 7 && hour < 22;
-        isDay ? dayMinutes++ : nightMinutes++;
-        current.setMinutes(current.getMinutes() + 1);
-      }
-
-      totalMinutes = dayMinutes + nightMinutes;
-
-      if (totalMinutes < 120) {
-        let diff = 120 - totalMinutes;
-        let tempTime = new Date(end);
-        while (diff > 0) {
-          const hour = tempTime.getHours();
-          const isDay = hour >= 7 && hour < 22;
-          isDay ? dayMinutes++ : nightMinutes++;
-          tempTime.setMinutes(tempTime.getMinutes() + 1);
-          diff--;
+        // Decrypt pricing data
+        function decryptPricing() {
+            try {
+                const decrypted = atob(encryptedPricing);
+                return JSON.parse(decrypted);
+            } catch (error) {
+                console.error('Error decrypting pricing data:', error);
+                return null;
+            }
         }
-        totalMinutes = 120;
-      }
 
-      let farePerMinuteDay = 0;
-      let farePerMinuteNight = 0;
+        // Get pricing key based on selections
+        function getPricingKey(uniform, tripType, tripRoute) {
+            const uniformKey = uniform === 'yes' ? 'yes' : 'no';
+            const typeKey = tripType === 'instation' ? 'instation' : 'outstation';
+            const routeKey = tripRoute === 'oneway' ? 'oneway' : 'roundtrip';
+            return `uniform_${uniformKey}_${typeKey}_${routeKey}`;
+        }
 
-      if (totalMinutes <= 120) {
-        farePerMinuteDay = priceArray[0];
-        farePerMinuteNight = priceArray[1];
-      } else if (totalMinutes <= 240) {
-        farePerMinuteDay = priceArray[2];
-        farePerMinuteNight = priceArray[3];
-      } else if (totalMinutes <= 480) {
-        farePerMinuteDay = priceArray[4];
-        farePerMinuteNight = priceArray[5];
-      } else if (totalMinutes <= 720) {
-        farePerMinuteDay = priceArray[6];
-        farePerMinuteNight = priceArray[7];
-      } else if (totalMinutes <= 1080) {
-        farePerMinuteDay = priceArray[8];
-        farePerMinuteNight = priceArray[9];
-      } else if (totalMinutes <= 1440) {
-        farePerMinuteDay = priceArray[10];
-        farePerMinuteNight = priceArray[11];
-      } else if (totalMinutes <= 8640) {
-        farePerMinuteDay = priceArray[12];
-        farePerMinuteNight = priceArray[12];
-      } else {
-        farePerMinuteDay = priceArray[13];
-        farePerMinuteNight = priceArray[13];
-      }
+        // Check if time is day or night
+        function isDayTime(hour) {
+            return hour >= 7 && hour < 22; // 7 AM to 9:59 PM is day
+        }
 
-      const dayFare = dayMinutes * farePerMinuteDay;
-      const nightFare = nightMinutes * farePerMinuteNight;
-      const base = dayFare + nightFare;
-      const gst = Math.round(base * 0.18);
-      const total = Math.round(base + gst);
+        // Calculate day and night minutes
+        function calculateDayNightMinutes(startDate, endDate) {
+            let dayMinutes = 0;
+            let nightMinutes = 0;
+            
+            const current = new Date(startDate);
+            const end = new Date(endDate);
+            
+            while (current < end) {
+                const nextHour = new Date(current);
+                nextHour.setHours(current.getHours() + 1, 0, 0, 0);
+                
+                const periodEnd = nextHour > end ? end : nextHour;
+                const minutesInPeriod = (periodEnd - current) / 60000; // Convert to minutes
+                
+                if (isDayTime(current.getHours())) {
+                    dayMinutes += minutesInPeriod;
+                } else {
+                    nightMinutes += minutesInPeriod;
+                }
+                
+                current.setTime(nextHour.getTime());
+            }
+            
+            return { dayMinutes: Math.round(dayMinutes), nightMinutes: Math.round(nightMinutes) };
+        }
 
-      const formattedStart = formatDateTime(start);
-      const formattedEnd = formatDateTime(end);
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      const timeFormatted = `${hours} hrs ${pad(minutes)} mins`;
+        // Get rate for given minutes
+        function getRate(minutes, pricingTiers) {
+            for (const tier of pricingTiers) {
+                if (minutes >= tier.min && minutes <= tier.max) {
+                    return { day: tier.day, night: tier.night };
+                }
+            }
+            return { day: 0, night: 0 };
+        }
 
-      const summaryText =
-`Trip start time - ${formattedStart}
-Trip end time - ${formattedEnd}
-Trip type - ${tripType}
-Trip route - ${mode}
-Total Time - ${timeFormatted}
-Total Price - ₹${total}`;
+        // Round price according to rule
+        function roundPrice(price) {
+            const decimal = price % 1;
+            if (decimal > 0.6) {
+                return Math.ceil(price);
+            }
+            return Math.floor(price) + (decimal > 0 ? 1 : 0);
+        }
 
-      document.getElementById("result").innerHTML =
-        `<div><strong>Total Minutes:</strong> ${totalMinutes} mins</div>
-        <div><strong>Day:</strong> ${dayMinutes} mins | <strong>Night:</strong> ${nightMinutes} mins</div>
-        <div><strong>Rate per Minute:</strong> ₹${farePerMinuteDay.toFixed(2)} (Day), ₹${farePerMinuteNight.toFixed(2)} (Night)</div>
-        <div><strong>Base Price:</strong> ₹${base.toFixed(2)}</div>
-        <div><strong>GST (18%):</strong> ₹${gst}</div>
-        <div><strong><u>Total Price:</u></strong> ₹${total}</div>
-        <div class="copy-box" id="copyText">${summaryText}</div>
-        <button class="copy-btn" onclick="copyToClipboard()">📋 Copy Summary</button>`;
-    }
+        // Format date for display
+        function formatDateTime(date) {
+            const options = {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            return date.toLocaleDateString('en-GB', options).replace(',', '');
+        }
 
-    function copyToClipboard() {
-      const text = document.getElementById("copyText").innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => {
-          alert("Trip summary copied to clipboard!");
-        }).catch((err) => {
-          console.error("Clipboard write failed:", err);
-          fallbackCopy(text);
+        // Format duration
+        function formatDuration(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours} hrs ${mins.toString().padStart(2, '0')} mins`;
+        }
+
+        // Calculate fare
+        function calculateFare(startDateTime, endDateTime, uniform, tripType, tripRoute) {
+            const startDate = new Date(startDateTime);
+            const endDate = new Date(endDateTime);
+            
+            // Calculate total minutes
+            let totalMinutes = Math.round((endDate - startDate) / 60000);
+            
+            // Enforce minimum 119 minutes
+            if (totalMinutes < 119) {
+                totalMinutes = 119;
+            }
+            
+            // Get pricing data
+            const pricingData = decryptPricing();
+            if (!pricingData) {
+                throw new Error('Unable to load pricing data');
+            }
+            
+            const pricingKey = getPricingKey(uniform, tripType, tripRoute);
+            const pricingTiers = pricingData[pricingKey];
+            
+            if (!pricingTiers) {
+                throw new Error('Invalid pricing configuration');
+            }
+            
+            // Calculate day and night minutes
+            const { dayMinutes, nightMinutes } = calculateDayNightMinutes(startDate, endDate);
+            
+            // Get rates
+            const rates = getRate(totalMinutes, pricingTiers);
+            
+            // Calculate base price
+            const basePrice = (dayMinutes * rates.day) + (nightMinutes * rates.night);
+            
+            // Calculate GST (18%)
+            const gst = basePrice * 0.18;
+            
+            // Calculate total price
+            const totalPrice = basePrice + gst;
+            
+            return {
+                totalMinutes,
+                dayMinutes,
+                nightMinutes,
+                rates,
+                basePrice: roundPrice(basePrice),
+                gst: roundPrice(gst),
+                totalPrice: roundPrice(totalPrice),
+                startDate,
+                endDate
+            };
+        }
+
+        // Display results
+        function displayResults(result, uniform, tripType, tripRoute) {
+            const resultsDiv = document.getElementById('results');
+            const summaryDiv = document.getElementById('summary');
+            
+            // Format trip type and route for display
+            const tripTypeDisplay = tripType === 'instation' ? 'In-station' : 'Out-station';
+            const tripRouteDisplay = tripRoute === 'oneway' ? 'One Way' : 'Round Trip';
+            
+            // Results content
+            const resultsContent = `
+                <div class="result-item">
+                    <span class="result-label">Total Minutes:</span>
+                    <span class="result-value">${result.totalMinutes} mins</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Day: ${result.dayMinutes} mins | Night: ${result.nightMinutes} mins</span>
+                    <span class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Rate per Minute:</span>
+                    <span class="result-value">₹${result.rates.day.toFixed(2)} (Day), ₹${result.rates.night.toFixed(2)} (Night)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Base Price:</span>
+                    <span class="result-value">₹${result.basePrice.toFixed(2)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">GST (18%):</span>
+                    <span class="result-value">₹${result.gst.toFixed(2)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Price:</span>
+                    <span class="result-value">₹${result.totalPrice.toFixed(2)}</span>
+                </div>
+            `;
+            
+            document.getElementById('resultsContent').innerHTML = resultsContent;
+            resultsDiv.classList.add('show');
+            
+            // Summary content
+            const summaryContent = `
+                <div class="summary-item">Trip start time - ${formatDateTime(result.startDate)}</div>
+                <div class="summary-item">Trip end time - ${formatDateTime(result.endDate)}</div>
+                <div class="summary-item">Trip type - ${tripTypeDisplay}</div>
+                <div class="summary-item">Trip route - ${tripRouteDisplay}</div>
+                <div class="summary-item">Total Time - ${formatDuration(result.totalMinutes)}</div>
+                <div class="summary-item">Total Price - ₹${result.totalPrice.toFixed(2)}</div>
+            `;
+            
+            document.getElementById('summaryContent').innerHTML = summaryContent;
+            summaryDiv.classList.add('show');
+        }
+
+        // Copy summary to clipboard
+        function copySummary() {
+            const summaryContent = document.getElementById('summaryContent');
+            const text = Array.from(summaryContent.children)
+                .map(item => item.textContent)
+                .join('\n');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy Summary';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        // Clear error messages
+        function clearErrors() {
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(error => {
+                error.classList.remove('show');
+                error.textContent = '';
+            });
+        }
+
+        // Validate form
+        function validateForm(startDateTime, endDateTime) {
+            clearErrors();
+            let isValid = true;
+            
+            const startDate = new Date(startDateTime);
+            const endDate = new Date(endDateTime);
+            const now = new Date();
+            
+            if (startDate >= endDate) {
+                showError('endError', 'End time must be after start time');
+                isValid = false;
+            }
+            
+            if ((endDate - startDate) < 60000) { // Less than 1 minute
+                showError('endError', 'Trip duration must be at least 1 minute');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('fareForm');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const startDateTime = document.getElementById('startDateTime').value;
+                const endDateTime = document.getElementById('endDateTime').value;
+                const uniform = document.getElementById('uniform').value;
+                const tripType = document.getElementById('tripType').value;
+                const tripRoute = document.getElementById('tripRoute').value;
+                
+                if (!validateForm(startDateTime, endDateTime)) {
+                    return;
+                }
+                
+                try {
+                    const result = calculateFare(startDateTime, endDateTime, uniform, tripType, tripRoute);
+                    displayResults(result, uniform, tripType, tripRoute);
+                } catch (error) {
+                    alert('Error calculating fare: ' + error.message);
+                }
+            });
+            
+            copyBtn.addEventListener('click', copySummary);
+            
+            // Set default date/time (current time and +2 hours)
+            const now = new Date();
+            const later = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // +2 hours
+            
+            document.getElementById('startDateTime').value = now.toISOString().slice(0, 16);
+            document.getElementById('endDateTime').value = later.toISOString().slice(0, 16);
         });
-      } else {
-        fallbackCopy(text);
-      }
-    }
-
-    function fallbackCopy(text) {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        alert(successful ? "Trip summary copied! (Fallback)" : "Failed to copy summary.");
-      } catch (err) {
-        console.error("Fallback copy failed:", err);
-      }
-
-      document.body.removeChild(textarea);
-    }
-  </script>
+    </script>
 </body>
 </html>
