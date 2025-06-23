@@ -2,41 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trip Fare Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="rates.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #ff6600;
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 30px;
+      width: 100%;
+      background: #ff6600;
+      color: white;
+      font-size: 18px;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #results {
+      margin-top: 30px;
+      background: #fff8f0;
+      border: 1px solid #ffd6b3;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    #results p {
+      font-size: 16px;
+      margin: 8px 0;
+    }
+    strong {
+      color: #cc3300;
+    }
+  </style>
 </head>
 <body>
-  <h1>Trip Fare Calculator</h1>
-  <form id="fareForm">
-    <label>Start Date & Time:
-      <input type="datetime-local" id="startDateTime" required />
-    </label>
-    <label>End Date & Time:
-      <input type="datetime-local" id="endDateTime" required />
-    </label>
-    <label>Uniform:
-      <select id="uniform" required>
-        <option value="no">No</option>
-        <option value="yes">Yes</option>
-      </select>
-    </label>
-    <label>Trip Type:
-      <select id="tripType" required>
-        <option value="instation">In-station</option>
-        <option value="outstation">Out-station</option>
-      </select>
-    </label>
-    <label>Trip Route:
-      <select id="tripRoute" required>
-        <option value="oneway">One Way</option>
-        <option value="roundtrip">Round Trip</option>
-      </select>
-    </label>
-    <button type="submit">Calculate Fare</button>
-  </form>
+  <div class="container">
+    <h1>Trip Fare Calculator</h1>
+    <form id="fareForm">
+      <label>Start Date & Time:
+        <input type="datetime-local" id="startDateTime" required />
+      </label>
+      <label>End Date & Time:
+        <input type="datetime-local" id="endDateTime" required />
+      </label>
+      <label>Uniform:
+        <select id="uniform" required>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </label>
+      <label>Trip Type:
+        <select id="tripType" required>
+          <option value="instation">In-station</option>
+          <option value="outstation">Out-station</option>
+        </select>
+      </label>
+      <label>Trip Route:
+        <select id="tripRoute" required>
+          <option value="oneway">One Way</option>
+          <option value="roundtrip">Round Trip</option>
+        </select>
+      </label>
+      <button type="submit">Calculate Fare</button>
+    </form>
 
-  <div id="results"></div>
+    <div id="results" style="display:none;"></div>
+  </div>
 
   <script>
     function getPricingKey(uniform, tripType, tripRoute) {
@@ -44,30 +101,33 @@
     }
 
     function isDayTime(hour) {
-      return hour >= 7 && hour < 22; // 7 AM to 9:59 PM is day
+      return hour >= 7 && hour <= 21;
     }
 
-    function calculateDayNightMinutes(startDate, endDate) {
+    function calculateDayNightMinutes(start, end) {
       let dayMinutes = 0, nightMinutes = 0;
-      const current = new Date(startDate);
+      let current = new Date(start);
 
-      while (current < endDate) {
-        const next = new Date(current.getTime() + 60000);
+      while (current < end) {
         const hour = current.getHours();
-        if (isDayTime(hour)) dayMinutes++;
-        else nightMinutes++;
-        current.setTime(next.getTime());
+        if (isDayTime(hour)) {
+          dayMinutes++;
+        } else {
+          nightMinutes++;
+        }
+        current.setMinutes(current.getMinutes() + 1);
       }
+
       return { dayMinutes, nightMinutes };
     }
 
-    function getRate(minutes, pricingTiers) {
-      for (const tier of pricingTiers) {
+    function getRate(minutes, tiers) {
+      for (const tier of tiers) {
         if (minutes >= tier.min && minutes <= tier.max) {
           return { day: tier.day, night: tier.night };
         }
       }
-      return pricingTiers.length ? { day: pricingTiers.at(-1).day, night: pricingTiers.at(-1).night } : { day: 0, night: 0 };
+      return tiers.length ? { day: tiers.at(-1).day, night: tiers.at(-1).night } : { day: 0, night: 0 };
     }
 
     function roundPrice(value) {
@@ -75,54 +135,40 @@
       return decimal > 0.6 ? Math.ceil(value) : Math.floor(value) + (decimal > 0 ? 1 : 0);
     }
 
-    function calculateFare(startDateTime, endDateTime, uniform, tripType, tripRoute) {
-      const start = new Date(startDateTime);
-      const end = new Date(endDateTime);
-      let totalMinutes = Math.round((end - start) / 60000);
-      if (totalMinutes < 120) totalMinutes = 120;
-
-      const key = getPricingKey(uniform, tripType, tripRoute);
-      const pricingTiers = pricingData[key];
-      if (!pricingTiers) throw new Error('Invalid pricing');
-
-      const { dayMinutes, nightMinutes } = calculateDayNightMinutes(start, end);
-      const rates = getRate(totalMinutes, pricingTiers);
-      const basePrice = dayMinutes * rates.day + nightMinutes * rates.night;
-      const gst = basePrice * 0.18;
-      const totalPrice = basePrice + gst;
-
-      return {
-        totalMinutes,
-        dayMinutes,
-        nightMinutes,
-        rates,
-        basePrice: roundPrice(basePrice),
-        gst: roundPrice(gst),
-        totalPrice: roundPrice(totalPrice)
-      };
-    }
-
     document.getElementById('fareForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      const start = document.getElementById('startDateTime').value;
-      const end = document.getElementById('endDateTime').value;
+
+      const start = new Date(document.getElementById('startDateTime').value);
+      const end = new Date(document.getElementById('endDateTime').value);
       const uniform = document.getElementById('uniform').value;
       const type = document.getElementById('tripType').value;
       const route = document.getElementById('tripRoute').value;
 
-      try {
-        const result = calculateFare(start, end, uniform, type, route);
-        document.getElementById('results').innerHTML = `
-          <p>Total Minutes: ${result.totalMinutes}</p>
-          <p>Trip time: ${result.dayMinutes} min (day), ${result.nightMinutes} min (night)</p>
-          <p>Rate per Minute: ₹${result.rates.day} (day), ₹${result.rates.night} (night)</p>
-          <p>Base Price: ₹${result.basePrice}</p>
-          <p>GST (18%): ₹${result.gst}</p>
-          <p><strong>Total Price: ₹${result.totalPrice}</strong></p>
-        `;
-      } catch (err) {
-        alert(err.message);
+      let totalMinutes = Math.round((end - start) / 60000);
+      if (totalMinutes < 120) totalMinutes = 120;
+
+      const key = getPricingKey(uniform, type, route);
+      const pricingTiers = pricingData[key];
+      if (!pricingTiers) {
+        alert("Pricing data not found.");
+        return;
       }
+
+      const { dayMinutes, nightMinutes } = calculateDayNightMinutes(start, end);
+      const rates = getRate(totalMinutes, pricingTiers);
+      const basePrice = (dayMinutes * rates.day) + (nightMinutes * rates.night);
+      const gst = basePrice * 0.18;
+      const totalPrice = basePrice + gst;
+
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').innerHTML = `
+        <p><strong>Total Minutes:</strong> ${totalMinutes}</p>
+        <p><strong>Trip time:</strong> ${dayMinutes} min (day), ${nightMinutes} min (night)</p>
+        <p><strong>Rate per Minute:</strong> ₹${rates.day} (day), ₹${rates.night} (night)</p>
+        <p><strong>Base Price:</strong> ₹${roundPrice(basePrice)}</p>
+        <p><strong>GST (18%):</strong> ₹${roundPrice(gst)}</p>
+        <p><strong>Total Price:</strong> ₹${roundPrice(totalPrice)}</p>
+      `;
     });
   </script>
 </body>
