@@ -1,1 +1,0 @@
-{"name": "trip-fare-calculator", "version": "1.0.0", "main": "server.js", "scripts": {"dev": "node server.js", "start": "node server.js"}}
