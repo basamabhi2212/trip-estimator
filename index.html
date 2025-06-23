@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Trip Fare Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="rates.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -95,80 +94,82 @@
     <div id="results" style="display:none;"></div>
   </div>
 
+  <!-- Load JavaScript after DOM -->
+  <script src="rates.js"></script>
   <script>
-    function getPricingKey(uniform, tripType, tripRoute) {
-      return `uniform_${uniform}_${tripType}_${tripRoute}`;
-    }
-
-    function isDayTime(hour) {
-      return hour >= 7 && hour <= 21;
-    }
-
-    function calculateDayNightMinutes(start, end) {
-      let dayMinutes = 0, nightMinutes = 0;
-      let current = new Date(start);
-
-      while (current < end) {
-        const hour = current.getHours();
-        if (isDayTime(hour)) {
-          dayMinutes++;
-        } else {
-          nightMinutes++;
-        }
-        current.setMinutes(current.getMinutes() + 1);
-      }
-
-      return { dayMinutes, nightMinutes };
-    }
-
-    function getRate(minutes, tiers) {
-      for (const tier of tiers) {
-        if (minutes >= tier.min && minutes <= tier.max) {
-          return { day: tier.day, night: tier.night };
-        }
-      }
-      return tiers.length ? { day: tiers.at(-1).day, night: tiers.at(-1).night } : { day: 0, night: 0 };
-    }
-
-    function roundPrice(value) {
-      const decimal = value % 1;
-      return decimal > 0.6 ? Math.ceil(value) : Math.floor(value) + (decimal > 0 ? 1 : 0);
-    }
-
-    document.getElementById('fareForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const start = new Date(document.getElementById('startDateTime').value);
-      const end = new Date(document.getElementById('endDateTime').value);
-      const uniform = document.getElementById('uniform').value;
-      const type = document.getElementById('tripType').value;
-      const route = document.getElementById('tripRoute').value;
-
-      let totalMinutes = Math.round((end - start) / 60000);
-      if (totalMinutes < 120) totalMinutes = 120;
-
-      const key = getPricingKey(uniform, type, route);
-      const pricingTiers = pricingData[key];
-      if (!pricingTiers) {
-        alert("Pricing data not found.");
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!window.pricingData) {
+        alert("Pricing data not loaded. Please check rates.js.");
         return;
       }
 
-      const { dayMinutes, nightMinutes } = calculateDayNightMinutes(start, end);
-      const rates = getRate(totalMinutes, pricingTiers);
-      const basePrice = (dayMinutes * rates.day) + (nightMinutes * rates.night);
-      const gst = basePrice * 0.18;
-      const totalPrice = basePrice + gst;
+      const isDayTime = hour => hour >= 7 && hour <= 21;
 
-      document.getElementById('results').style.display = 'block';
-      document.getElementById('results').innerHTML = `
-        <p><strong>Total Minutes:</strong> ${totalMinutes}</p>
-        <p><strong>Trip time:</strong> ${dayMinutes} min (day), ${nightMinutes} min (night)</p>
-        <p><strong>Rate per Minute:</strong> ₹${rates.day} (day), ₹${rates.night} (night)</p>
-        <p><strong>Base Price:</strong> ₹${roundPrice(basePrice)}</p>
-        <p><strong>GST (18%):</strong> ₹${roundPrice(gst)}</p>
-        <p><strong>Total Price:</strong> ₹${roundPrice(totalPrice)}</p>
-      `;
+      const getPricingKey = (uniform, type, route) =>
+        `uniform_${uniform}_${type}_${route}`;
+
+      function calculateDayNightMinutes(start, end) {
+        let day = 0, night = 0;
+        let current = new Date(start);
+
+        while (current < end) {
+          if (isDayTime(current.getHours())) day++;
+          else night++;
+          current.setMinutes(current.getMinutes() + 1);
+        }
+        return { dayMinutes: day, nightMinutes: night };
+      }
+
+      function getRate(minutes, tiers) {
+        for (const tier of tiers) {
+          if (minutes >= tier.min && minutes <= tier.max)
+            return { day: tier.day, night: tier.night };
+        }
+        return tiers.length
+          ? { day: tiers.at(-1).day, night: tiers.at(-1).night }
+          : { day: 0, night: 0 };
+      }
+
+      function roundPrice(value) {
+        const dec = value % 1;
+        return dec > 0.6 ? Math.ceil(value) : Math.floor(value) + (dec > 0 ? 1 : 0);
+      }
+
+      document.getElementById('fareForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const start = new Date(document.getElementById('startDateTime').value);
+        const end = new Date(document.getElementById('endDateTime').value);
+        const uniform = document.getElementById('uniform').value;
+        const type = document.getElementById('tripType').value;
+        const route = document.getElementById('tripRoute').value;
+
+        let totalMinutes = Math.round((end - start) / 60000);
+        if (totalMinutes < 120) totalMinutes = 120;
+
+        const key = getPricingKey(uniform, type, route);
+        const pricingTiers = pricingData[key];
+        if (!pricingTiers) {
+          alert("Pricing data not found for this configuration.");
+          return;
+        }
+
+        const { dayMinutes, nightMinutes } = calculateDayNightMinutes(start, end);
+        const rates = getRate(totalMinutes, pricingTiers);
+        const base = (dayMinutes * rates.day) + (nightMinutes * rates.night);
+        const gst = base * 0.18;
+        const total = base + gst;
+
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('results').innerHTML = `
+          <p><strong>Total Minutes:</strong> ${totalMinutes}</p>
+          <p><strong>Trip time:</strong> ${dayMinutes} min (day), ${nightMinutes} min (night)</p>
+          <p><strong>Rate per Minute:</strong> ₹${rates.day} (day), ₹${rates.night} (night)</p>
+          <p><strong>Base Price:</strong> ₹${roundPrice(base)}</p>
+          <p><strong>GST (18%):</strong> ₹${roundPrice(gst)}</p>
+          <p><strong>Total Price:</strong> ₹${roundPrice(total)}</p>
+        `;
+      });
     });
   </script>
 </body>
