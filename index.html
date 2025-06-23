@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Fare Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF8C00 0%, #FF7F00 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #FF8C00;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FF8C00 0%, #FF7F00 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 140, 0, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1.1rem;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #FF8C00;
+        }
+
+        .result-label {
+            color: #666;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #FF8C00;
+        }
+
+        .summary.show {
+            display: block;
+            animation: slideIn 0.5s ease 0.3s both;
+        }
+
+        .summary h3 {
+            color: #FF8C00;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .summary-item {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Trip Fare Calculator</h1>
+        </div>
+
+        <div class="form-container">
+            <form id="fareForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDateTime">Trip Start Date & Time</label>
+                        <input type="datetime-local" id="startDateTime" required>
+                        <div class="error" id="startError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDateTime">Trip End Date & Time</label>
+                        <input type="datetime-local" id="endDateTime" required>
+                        <div class="error" id="endError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="uniform">Uniform</label>
+                        <select id="uniform" required>
+                            <option value="">Select Option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tripType">Trip Type</label>
+                        <select id="tripType" required>
+                            <option value="">Select Type</option>
+                            <option value="instation">In-station</option>
+                            <option value="outstation">Out-station</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tripRoute">Trip Route</label>
+                    <select id="tripRoute" required>
+                        <option value="">Select Route</option>
+                        <option value="oneway">One Way</option>
+                        <option value="roundtrip">Round Trip</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="calculate-btn">Calculate Fare</button>
+            </form>
+
+            <div class="results" id="results">
+                <h2>Fare Calculation Results</h2>
+                <div id="resultsContent"></div>
+            </div>
+
+            <div class="summary" id="summary">
+                <h3>Trip Summary</h3>
+                <div id="summaryContent"></div>
+                <button class="copy-btn" id="copyBtn">Copy Summary</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="rates.js"></script>
+    <script>
+        // Get pricing key based on selections
+        function getPricingKey(uniform, tripType, tripRoute) {
+            const uniformKey = uniform === 'yes' ? 'yes' : 'no';
+            const typeKey = tripType === 'instation' ? 'instation' : 'outstation';
+            const routeKey = tripRoute === 'oneway' ? 'oneway' : 'roundtrip';
+            return `uniform_${uniformKey}_${typeKey}_${routeKey}`;
+        }
+
+        // Check if time is day or night
+        function isDayTime(hour) {
+            return hour >= 7 && hour < 22; // 7 AM to 9:59 PM is day
+        }
+
+        // Calculate day and night minutes
+        function calculateDayNightMinutes(startDate, endDate) {
+            let dayMinutes = 0;
+            let nightMinutes = 0;
+            
+            const current = new Date(startDate);
+            const end = new Date(endDate);
+            
+            while (current < end) {
+                const nextHour = new Date(current);
+                nextHour.setHours(current.getHours() + 1, 0, 0, 0);
+                
+                const periodEnd = nextHour > end ? end : nextHour;
+                const minutesInPeriod = (periodEnd - current) / 60000; // Convert to minutes
+                
+                if (isDayTime(current.getHours())) {
+                    dayMinutes += minutesInPeriod;
+                } else {
+                    nightMinutes += minutesInPeriod;
+                }
+                
+                current.setTime(nextHour.getTime());
+            }
+            
+            return { dayMinutes: Math.round(dayMinutes), nightMinutes: Math.round(nightMinutes) };
+        }
+
+        // Get rate for given minutes
+        function getRate(minutes, pricingTiers) {
+            for (const tier of pricingTiers) {
+                if (minutes >= tier.min && minutes <= tier.max) {
+                    return { day: tier.day, night: tier.night };
+                }
+            }
+            // If minutes exceed all tiers, use the highest tier's rate
+            if (pricingTiers.length > 0) {
+                const highestTier = pricingTiers[pricingTiers.length - 1];
+                return { day: highestTier.day, night: highestTier.night };
+            }
+            return { day: 0, night: 0 };
+        }
+
+        // Round price according to rule
+        function roundPrice(price) {
+            const decimal = price % 1;
+            if (decimal > 0.6) {
+                return Math.ceil(price);
+            }
+            return Math.floor(price) + (decimal > 0 ? 1 : 0);
+        }
+
+        // Format date for display
+        function formatDateTime(date) {
+            const options = {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            return date.toLocaleDateString('en-GB', options).replace(',', '');
+        }
+
+        // Format duration
+        function formatDuration(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours} hrs ${mins.toString().padStart(2, '0')} mins`;
+        }
+
+        // Calculate fare
+        function calculateFare(startDateTime, endDateTime, uniform, tripType, tripRoute) {
+            const startDate = new Date(startDateTime);
+            const endDate = new Date(endDateTime);
+            
+            // Calculate total minutes
+            let totalMinutes = Math.round((endDate - startDate) / 60000);
+            
+            // Enforce minimum 119 minutes
+            if (totalMinutes < 119) {
+                totalMinutes = 119;
+            }
+            
+            // Get pricing data
+            const pricingKey = getPricingKey(uniform, tripType, tripRoute);
+            const pricingTiers = pricingData[pricingKey];
+            
+            if (!pricingTiers) {
+                throw new Error('Invalid pricing configuration');
+            }
+            
+            // Calculate day and night minutes
+            const { dayMinutes, nightMinutes } = calculateDayNightMinutes(startDate, endDate);
+            
+            // Get rates
+            const rates = getRate(totalMinutes, pricingTiers);
+            
+            // Calculate base price
+            const basePrice = (dayMinutes * rates.day) + (nightMinutes * rates.night);
+            
+            // Calculate GST (18%)
+            const gst = basePrice * 0.18;
+            
+            // Calculate total price
+            const totalPrice = basePrice + gst;
+            
+            return {
+                totalMinutes,
+                dayMinutes,
+                nightMinutes,
+                rates,
+                basePrice: roundPrice(basePrice),
+                gst: roundPrice(gst),
+                totalPrice: roundPrice(totalPrice),
+                startDate,
+                endDate
+            };
+        }
+
+        // Display results
+        function displayResults(result, uniform, tripType, tripRoute) {
+            const resultsDiv = document.getElementById('results');
+            const summaryDiv = document.getElementById('summary');
+            
+            // Format trip type and route for display
+            const tripTypeDisplay = tripType === 'instation' ? 'In-station' : 'Out-station';
+            const tripRouteDisplay = tripRoute === 'oneway' ? 'One Way' : 'Round Trip';
+            
+            // Results content
+            const resultsContent = `
+                <div class="result-item">
+                    <span class="result-label">Total Minutes:</span>
+                    <span class="result-value">${result.totalMinutes} mins</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Day: ${result.dayMinutes} mins | Night: ${result.nightMinutes} mins</span>
+                    <span class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Rate per Minute:</span>
+                    <span class="result-value">₹${result.rates.day.toFixed(2)} (Day), ₹${result.rates.night.toFixed(2)} (Night)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Base Price:</span>
+                    <span class="result-value">₹${result.basePrice.toFixed(2)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">GST (18%):</span>
+                    <span class="result-value">₹${result.gst.toFixed(2)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Price:</span>
+                    <span class="result-value">₹${result.totalPrice.toFixed(2)}</span>
+                </div>
+            `;
+            
+            document.getElementById('resultsContent').innerHTML = resultsContent;
+            resultsDiv.classList.add('show');
+            
+            // Summary content
+            const summaryContent = `
+                <div class="summary-item">Trip start time - ${formatDateTime(result.startDate)}</div>
+                <div class="summary-item">Trip end time - ${formatDateTime(result.endDate)}</div>
+                <div class="summary-item">Trip type - ${tripTypeDisplay}</div>
+                <div class="summary-item">Trip route - ${tripRouteDisplay}</div>
+                <div class="summary-item">Total Time - ${formatDuration(result.totalMinutes)}</div>
+                <div class="summary-item">Total Price - ₹${result.totalPrice.toFixed(2)}</div>
+            `;
+            
+            document.getElementById('summaryContent').innerHTML = summaryContent;
+            summaryDiv.classList.add('show');
+        }
+
+        // Copy summary to clipboard
+        function copySummary() {
+            const summaryContent = document.getElementById('summaryContent');
+            const text = Array.from(summaryContent.children)
+                .map(item => item.textContent)
+                .join('\n');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy Summary';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        // Clear error messages
+        function clearErrors() {
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(error => {
+                error.classList.remove('show');
+                error.textContent = '';
+            });
+        }
+
+        // Validate form
+        function validateForm(startDateTime, endDateTime) {
+            clearErrors();
+            let isValid = true;
+            
+            const startDate = new Date(startDateTime);
+            const endDate = new Date(endDateTime);
+            const now = new Date();
+            
+            if (startDate >= endDate) {
+                showError('endError', 'End time must be after start time');
+                isValid = false;
+            }
+            
+            if ((endDate - startDate) < 60000) { // Less than 1 minute
+                showError('endError', 'Trip duration must be at least 1 minute');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('fareForm');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const startDateTime = document.getElementById('startDateTime').value;
+                const endDateTime = document.getElementById('endDateTime').value;
+                const uniform = document.getElementById('uniform').value;
+                const tripType = document.getElementById('tripType').value;
+                const tripRoute = document.getElementById('tripRoute').value;
+                
+                if (!validateForm(startDateTime, endDateTime)) {
+                    return;
+                }
+                
+                try {
+                    const result = calculateFare(startDateTime, endDateTime, uniform, tripType, tripRoute);
+                    displayResults(result, uniform, tripType, tripRoute);
+                } catch (error) {
+                    alert('Error calculating fare: ' + error.message);
+                }
+            });
+            
+            copyBtn.addEventListener('click', copySummary);
+        });
+    </script>
+</body>
+</html>
