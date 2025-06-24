@@ -64,7 +64,7 @@ const fareChart = {
                 "4320-5759": { day: 1.20, night: 1.20 },
                 "5760-7199": { day: 1.20, night: 1.20 },
                 "7200-8639": { day: 1.20, night: 1.20 },
-                "8640-10079": { day: 1.20, night: 1.20 },
+                "8640-10079": { day: 1.10, night: 1.10 },
                 "10080-43199": { day: 1.20, night: 1.20 },
                 "43200-1000000": { day: 1.15, night: 1.15 }
             },
@@ -186,11 +186,13 @@ function getFareRates(totalMinutes, uniform, tripType, mode) {
     for (const range of timeRanges) {
         const [min, max] = range.split('-').map(Number);
         if (totalMinutes >= min && totalMinutes <= max) {
+            console.log(`Selected range: ${range} for ${totalMinutes} minutes. Rate: ${rates[range].day}/${rates[range].night}`);
             return rates[range];
         }
     }
     
     // Fallback to the highest range
+    console.log(`Using fallback range for ${totalMinutes} minutes`);
     return rates["43200-1000000"];
 }
 
@@ -262,27 +264,12 @@ function showResults(results) {
                 </button>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Total Duration:</strong> ${results.totalMinutes} minutes (${results.hours}h ${results.mins}m)</p>
-                        <p><strong>Day Minutes:</strong> ${results.dayMinutes}</p>
-                        <p><strong>Night Minutes:</strong> ${results.nightMinutes}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Day Rate:</strong> ₹${results.dayRate.toFixed(2)}/min</p>
-                        <p><strong>Night Rate:</strong> ₹${results.nightRate.toFixed(2)}/min</p>
-                        <p><strong>Base Price:</strong> ₹${results.basePrice.toFixed(2)}</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>GST (18%):</strong> ₹${results.gst}</p>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <h4><strong>Total Amount: ₹${results.totalPrice}</strong></h4>
-                    </div>
-                </div>
+                <div><strong>Total Minutes:</strong> ${results.totalMinutes} mins</div>
+                <div><strong>Day:</strong> ${results.dayMinutes} mins | <strong>Night:</strong> ${results.nightMinutes} mins</div>
+                <div><strong>Rate per Minute:</strong> ₹${results.dayRate.toFixed(2)} (Day), ₹${results.nightRate.toFixed(2)} (Night)</div>
+                <div><strong>Base Price:</strong> ₹${results.basePrice.toFixed(2)}</div>
+                <div><strong>GST (18%):</strong> ₹${results.gst}</div>
+                <div><strong><u>Total Price:</u></strong> ₹${results.totalPrice}</div>
             </div>
         </div>
     `;
@@ -415,6 +402,7 @@ function calculateFare() {
     const mins = totalMinutes % 60;
     
     // Show results
+    console.log(`Calculation details: ${totalMinutes} minutes, Day: ${dayMinutes}, Night: ${nightMinutes}, Rates: ${rates.day}/${rates.night}`);
     showResults({
         totalMinutes,
         hours,
