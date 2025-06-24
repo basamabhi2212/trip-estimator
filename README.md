@@ -34,11 +34,6 @@ A professional trip fare calculator with dynamic pricing based on duration, unif
 
 To run locally, simply open `index.html` in any modern web browser.
 
-## Security
-
-- Password protection is implemented for direct access to `rates.js`
-- Authentication required: `Basam@2212`
-- Main calculator works without authentication
 
 ## Usage
 
