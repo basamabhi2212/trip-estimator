@@ -4,7 +4,7 @@
     // Check if this file is being accessed directly
     if (window.location && (window.location.pathname.endsWith('rates.js') || window.location.pathname.includes('rates.js'))) {
         const password = prompt("This file contains sensitive pricing data. Enter password to access:");
-        if (password !== "Basam@2212") {
+        if (password !== "") {
             document.body.innerHTML = "<h1>Access Denied</h1><p>Invalid password. Contact administrator for access.</p>";
             throw new Error("Unauthorized access");
         }
