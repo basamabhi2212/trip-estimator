@@ -24,7 +24,7 @@ function decryptFareData() {
     
     try {
         // Password for decryption
-        const password = "Basam@2212";
+        const password = "";
         
         // Decode base64
         const decoded = atob(encryptedData);
